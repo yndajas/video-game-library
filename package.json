@@ -1,4 +1,7 @@
 {
+  "dependencies": {
+    "psn-api": "^2.10.0"
+  },
   "devDependencies": {
     "typescript": "^5.1.6"
   }
