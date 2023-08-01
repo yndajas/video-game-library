@@ -2,8 +2,11 @@ import * as dotenv from "dotenv";
 import {
   exchangeCodeForAccessToken,
   exchangeNpssoForCode,
+  getUserTitles,
   makeUniversalSearch,
 } from "psn-api";
+
+import type { getUserTitlesOptions } from "./@types/apis/psn";
 
 dotenv.config();
 
@@ -32,4 +35,14 @@ const getAccountId = async (username: string) => {
   );
 
   return result?.socialMetadata.accountId;
+};
+
+const getGamesWithTrophiesByUser = async (
+  accountId: string,
+  getUserTitlesOptions?: getUserTitlesOptions
+) => {
+  const authorisation = await getAuthorisation();
+  const accessToken = authorisation.accessToken;
+
+  return getUserTitles({ accessToken }, accountId, getUserTitlesOptions);
 };
