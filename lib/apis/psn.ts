@@ -9,7 +9,7 @@ import {
 import type {
   psnApiAuthorisation,
   psnApiGetUserTitlesOptions,
-} from "./@types/apis/psn";
+} from "../../@types/apis/psn";
 
 dotenv.config();
 
