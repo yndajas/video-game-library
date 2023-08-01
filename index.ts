@@ -6,43 +6,53 @@ import {
   makeUniversalSearch,
 } from "psn-api";
 
-import type { getUserTitlesOptions } from "./@types/apis/psn";
+import type {
+  psnApiAuthorisation,
+  psnApiGetUserTitlesOptions,
+} from "./@types/apis/psn";
 
 dotenv.config();
 
-const npsso = process.env.NPSSO as string;
+export default class PsnApi {
+  private authorisation: psnApiAuthorisation | undefined;
 
-const getAuthorisation = async () => {
-  const accessCode = await exchangeNpssoForCode(npsso);
-  const authorisation = await exchangeCodeForAccessToken(accessCode);
+  constructor() {}
 
-  return authorisation;
-};
+  private getAuthorisation = async () => {
+    if (!this.authorisation) {
+      const npsso = process.env.NPSSO as string;
+      const accessCode = await exchangeNpssoForCode(npsso);
+      this.authorisation = await exchangeCodeForAccessToken(accessCode);
+    }
 
-const getAccountId = async (username: string) => {
-  const authorisation = await getAuthorisation();
+    return this.authorisation;
+  };
 
-  const response = await makeUniversalSearch(
-    authorisation,
-    username,
-    "SocialAllAccounts"
-  );
+  private getAccountId = async (username: string) => {
+    const authorisation = await this.getAuthorisation();
 
-  const results = response.domainResponses[0].results;
+    const response = await makeUniversalSearch(
+      authorisation,
+      username,
+      "SocialAllAccounts"
+    );
 
-  const result = results.find(
-    (results) => results.socialMetadata.onlineId === username
-  );
+    const results = response.domainResponses[0].results;
 
-  return result?.socialMetadata.accountId;
-};
+    const result = results.find(
+      (results) => results.socialMetadata.onlineId === username
+    );
 
-const getGamesWithTrophiesByUser = async (
-  accountId: string,
-  getUserTitlesOptions?: getUserTitlesOptions
-) => {
-  const authorisation = await getAuthorisation();
-  const accessToken = authorisation.accessToken;
+    return result?.socialMetadata.accountId;
+  };
 
-  return getUserTitles({ accessToken }, accountId, getUserTitlesOptions);
-};
+  getGamesWithTrophies = async (
+    accountId: string,
+    getUserTitlesOptions?: psnApiGetUserTitlesOptions
+  ) => {
+    const authorization = await this.getAuthorisation();
+    const accessToken = authorization.accessToken;
+
+    return getUserTitles({ accessToken }, accountId, getUserTitlesOptions);
+  };
+}
