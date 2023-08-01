@@ -55,4 +55,24 @@ export default class PsnApi {
 
     return getUserTitles({ accessToken }, accountId, getUserTitlesOptions);
   };
+
+  getGamesWithTrophiesForAuthenticatedUser = async (
+    getUserTitlesOptions?: psnApiGetUserTitlesOptions
+  ) => {
+    return this.getGamesWithTrophies("me", getUserTitlesOptions);
+  };
+
+  getGamesWithTrophiesForOtherUser = async (
+    username: string,
+    getUserTitlesOptions?: psnApiGetUserTitlesOptions
+  ) => {
+    const accountId = await this.getAccountId(username);
+
+    if (!accountId) {
+      console.log("Account not found");
+      return null;
+    }
+
+    return this.getGamesWithTrophies(accountId, getUserTitlesOptions);
+  };
 }
