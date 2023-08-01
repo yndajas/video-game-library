@@ -1,5 +1,9 @@
 import * as dotenv from "dotenv";
-import { exchangeCodeForAccessToken, exchangeNpssoForCode } from "psn-api";
+import {
+  exchangeCodeForAccessToken,
+  exchangeNpssoForCode,
+  makeUniversalSearch,
+} from "psn-api";
 
 dotenv.config();
 
@@ -10,4 +14,22 @@ const getAuthorisation = async () => {
   const authorisation = await exchangeCodeForAccessToken(accessCode);
 
   return authorisation;
+};
+
+const getAccountId = async (username: string) => {
+  const authorisation = await getAuthorisation();
+
+  const response = await makeUniversalSearch(
+    authorisation,
+    username,
+    "SocialAllAccounts"
+  );
+
+  const results = response.domainResponses[0].results;
+
+  const result = results.find(
+    (results) => results.socialMetadata.onlineId === username
+  );
+
+  return result?.socialMetadata.accountId;
 };
