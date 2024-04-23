@@ -16,7 +16,7 @@ dotenv.config();
 export default class PsnApi {
   private authorisation: psnApiAuthorisation | undefined;
 
-  constructor() {}
+  constructor() { }
 
   private getAuthorisation = async () => {
     if (!this.authorisation) {
